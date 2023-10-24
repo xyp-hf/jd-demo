@@ -2,58 +2,37 @@
   <div class="wrapper">
     <img class="wrapper__img" src="http://www.dell-lee.com/imgs/vue3/user.png"/>
     <div class="wrapper__input">
+      <input class="wrapper__input__content" placeholder="请输入手机号" />
+    </div>
+    <div class="wrapper__input">
       <input
         class="wrapper__input__content"
-        placeholder="用户名"
-        v-model="data.username"
+        placeholder="请输入密码"
+        type="password"
       />
     </div>
     <div class="wrapper__input">
       <input
-        type="password"
         class="wrapper__input__content"
-        placeholder="请输入密码"
-        v-model="data.password"
+        placeholder="确认密码"
+        type="password"
       />
     </div>
-    <div class="wrapper__login-button" @click="handleLogin">登陆</div>
-    <div class="wrapper__login-link" @click="handleRegisterClick">立即注册</div>
+    <div class="wrapper__register-button">注册</div>
+    <div class="wrapper__register-link" @click="handleLoginClick">已有账号去登陆</div>
   </div>
 </template>
 
 <script>
 import { useRouter } from 'vue-router';
-import { post } from '../../utils/request'
-import { reactive } from 'vue'
-
 export default {
-  name: 'Login',
+  name: 'Register',
   setup() {
-    const data = reactive({
-      username: '',
-      password: ''
-    })
-    const router = useRouter()
-    const handleLogin = async () => {
-      try {
-        const result = await post('/api/user/login', {
-          username: data.username,
-          password: data.password
-        })
-        if (result?.errno === 0) {
-          localStorage.isLogin = true
-          router.push({ name: 'Home' })
-        } else {
-          alert('登陆失败')
-        }
-      } catch (e) {
-        alert('请求失败')
-      }
+    const router = useRouter();
+    const handleLoginClick = () => {
+      router.push({ name: 'Login'});
     }
-    const handleRegisterClick = () => {
-      router.push({ name: 'Register' })
-    }
-    return { handleLogin, handleRegisterClick, data }
+    return { handleLoginClick }
   }
 }
 </script>
@@ -93,7 +72,7 @@ export default {
       }
     }
   }
-  &__login-button {
+  &__register-button {
     margin: .32rem .4rem .16rem .4rem;
     line-height: .48rem;
     background: #0091FF;
@@ -104,7 +83,7 @@ export default {
     font-size: .16rem;
     text-align: center;
   }
-  &__login-link {
+  &__register-link {
     text-align: center;
     font-size: .14rem;
     color: $content-notice-fontcolor;
