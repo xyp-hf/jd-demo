@@ -1,5 +1,33 @@
 <template>
   <div class="cart">
+    <div class="product">
+      <template
+        v-for="item in productList"
+        :key="item._id"
+      >
+        <div class="product__item" v-if="item.count > 0">
+          <img class="product__item__img" :src="item.imgUrl" />
+          <div class="product__item__detail">
+            <h4 class="product__item__title">{{item.name}}</h4>
+            <p class="product__item__price">
+              <span class="product__item__yen">&yen;</span>{{item.price}}
+              <span class="product__item__origin">&yen;{{item.oldPrice}}</span>
+            </p>
+          </div>
+          <div class="product__number">
+            <span
+              class="product__number__minus"
+              @click="() => { changeCartItemInfo(shopId, item._id, item, -1) }"
+            >-</span>
+              {{item.count || 0}}
+            <span
+              class="product__number__plus"
+              @click="() => { changeCartItemInfo(shopId, item._id, item, 1) }"
+            >+</span>
+          </div>
+        </div>
+      </template>
+    </div>
     <div class="check">
       <div class="check__icon">
         <img
@@ -20,12 +48,11 @@
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
+import { useCommonCartEffect } from './commonCartEffect'
 
 // 获取购物车信息逻辑
-const useCartEffect = () => {
+const useCartEffect = (shopId) => {
     const store = useStore()
-    const route = useRoute()
-    const shopId = route.params.id
     const cartList = store.state.cartList
 
     const total = computed(() => {
@@ -51,24 +78,103 @@ const useCartEffect = () => {
       }
       return count.toFixed(2)
     })
-    return { total, price}
+
+    const productList = computed(() => {
+      const productList = cartList[shopId] || []
+      return productList
+    })
+
+    return { total, price, productList}
 }
+
 export default {
   name: 'Cart',
   setup() {
-    const { total, price } = useCartEffect()
-    return { total, price }
+    const route = useRoute();
+    const shopId = route.params.id;
+    const { changeCartItemInfo } = useCommonCartEffect()
+    const { total, price, productList } = useCartEffect(shopId)
+    return { total, price, shopId, productList, changeCartItemInfo }
   }
 }
 </script>
 
 <style lang="scss" scoped>
 @import '../../style/viriables.scss';
+@import '../../style/mixins.scss';
 .cart {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
+}
+.product {
+  overflow-y: scroll;
+  flex: 1;
+  background: #FFF;
+  &__item {
+    position: relative;
+    display: flex;
+    padding: .12rem 0;
+    margin: 0 .16rem;
+    border-bottom: .01rem solid $content-bgColor;
+    &__detail {
+      overflow: hidden;
+    }
+    &__img {
+      width: .46rem;
+      height: .46rem;
+      margin-right: .16rem;
+    }
+    &__title {
+      margin: 0;
+      line-height: .2rem;
+      font-size: .14rem;
+      color: $content-fontcolor;
+      @include ellipsis;
+    }
+    &__price {
+      margin: .06rem 0 0 0;
+      line-height: .2rem;
+      font-size: .14rem;
+      color: $hightlight-fontColor;
+    }
+    &__yen {
+      font-size: .12rem;
+    }
+    &__origin {
+      margin-left: .06rem;
+      line-height: .2rem;
+      font-size: .12rem;
+      color: $light-fontColor;
+      text-decoration: line-through;
+    }
+    .product__number {
+      position: absolute;
+      right: 0;
+      bottom: .12rem;
+      &__minus, &__plus
+       {
+        display: inline-block;
+        width: .2rem;
+        height: .2rem;
+        line-height: .16rem;;
+        border-radius: 50%;
+        font-size: .2rem;
+        text-align: center;
+      }
+      &__minus {
+        border: .01rem solid $medium-fontColor;
+        color: $medium-fontColor;
+        margin-right: .05rem;
+      }
+      &__plus {
+        background: $btn-bgColor;
+        color: $bgColor;
+        margin-left: .05rem;
+      }
+    }
+  }
 }
 .check {
   display: flex;
