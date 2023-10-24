@@ -18,7 +18,7 @@
 <script>
 export default {
   name: 'ShopInfo',
-  props: ['item', 'hideBorder'],
+  props: ['item', 'hideBorder']
 }
 </script>
 
