@@ -8,8 +8,7 @@ const setLocalCartList = (state) => {
 
 const getLocaCartList = () => {
   // { shopId: {shopName:'', productList:{ productId: {} }}}
-  // return JSON.parse(localStorage.cartList) || {}
-  return localStorage.cartList?JSON.parse(localStorage.cartList): {}
+  return JSON.parse(localStorage.cartList) || {}
 }
 
 export default Vuex.createStore({
