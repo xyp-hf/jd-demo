@@ -19,5 +19,24 @@ export const useCommonCartEffect = (shopId) => {
     return shopName
   })
 
-  return { cartList, shopName, productList, changeCartItemInfo }
+  const calculations = computed(() => {
+    const productList = cartList[shopId]?.productList
+    const result = { total: 0, price: 0, allChecked: true}
+    if(productList) {
+       for(let i in productList) {
+         const product = productList[i]
+         result.total += product.count
+         if(product.check) {
+           result.price += (product.count * product.price)
+         }
+         if(product.count > 0 && !product.check) {
+           result.allChecked = false
+         }
+      }
+    }
+    result.price = result.price.toFixed(2)
+    return result
+  })
+
+  return { cartList, shopName, productList, calculations, changeCartItemInfo }
 }
